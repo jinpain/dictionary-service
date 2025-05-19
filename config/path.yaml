@@ -1,0 +1,2 @@
+db_path: config/db.yaml
+server_path: config/server.yaml
