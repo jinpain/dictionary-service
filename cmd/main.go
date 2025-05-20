@@ -29,7 +29,9 @@ func main() {
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  connStr,
 		PreferSimpleProtocol: true,
-	}), &gorm.Config{})
+	}), &gorm.Config{
+		SkipDefaultTransaction: true,
+	})
 
 	if err != nil {
 		panic(err)

@@ -10,7 +10,7 @@ import (
 
 type InsuranceService interface {
 	GetById(id *uuid.UUID) (*insurance.Model, error)
-	GetList(limit int, offset int) ([]*insurance.Model, error)
+	GetList(filter *insurance.Filter) ([]*insurance.Model, error)
 	Create(insurance *insurance.Model) (*uuid.UUID, error)
 	Update(insurance *insurance.Model) error
 	MarkDelete(id *uuid.UUID) error
@@ -45,10 +45,13 @@ func (h *InsuranceHandler) GetById(c *gin.Context) {
 }
 
 func (h *InsuranceHandler) GetList(c *gin.Context) {
-	limit := c.GetInt("limit")
-	offset := c.GetInt("offset")
+	var filter insurance.Filter
+	if err := c.ShouldBindJSON(&filter); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input", "details": err.Error()})
+		return
+	}
 
-	insurances, err := h.insuranceService.GetList(limit, offset)
+	insurances, err := h.insuranceService.GetList(&filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
